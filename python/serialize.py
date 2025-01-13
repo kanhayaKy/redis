@@ -1,19 +1,20 @@
 def parse_simple_string(msg):
-    return msg[1:]
+    formatted_msg = msg.replace("\r\n", "")
+    return formatted_msg[1:]
 
 
 def parse_error(msg):
+    msg = msg.replace("\r\n", "")
     return msg[1:]
 
 
 def parse_integer(msg):
+    msg = msg.split("\r\n")
     return int(msg[1:])
 
 
 def parse_bulk_string(msg):
-    print(msg)
-    formatted_msg = msg.split()
-    print(formatted_msg)
+    formatted_msg = msg.split("\r\n")
 
     if formatted_msg[0][1:] == "-1":
         return None
@@ -21,24 +22,24 @@ def parse_bulk_string(msg):
     return formatted_msg[1]
 
 
-def parse_array(msg):
-    formatted_msg = msg.split()
-    arr_len = int(formatted_msg[0][1:])
+def parse_array(resp_msg, level=1):
+    msg = resp_msg.split("\r\n")
+    arr_len_str = msg[0][1:]
+    arr_len = int(arr_len_str)
 
-    if arr_len == -1:
-        return None
+    current = 1
 
-    arr = []
-    for i in range(arr_len):
-        first, second = formatted_msg[i], formatted_msg[1]
-        item = serialize(first + "\r\n" + second)
-        arr.append(item)
-    return arr
+    output = []
+    for _ in range(arr_len):
+        first, second = msg[current], msg[current + 1]
+        item = serialize(first + "\r\n" + second, level + 1)
+        output.append(item)
+        current += 2
+
+    return output
 
 
-def serialize(resp_msg):
-    formatted_msg = resp_msg.strip()
-
+def serialize(resp_msg, level=1):
     switcher = {
         "+": parse_simple_string,
         "-": parse_error,
@@ -47,11 +48,17 @@ def serialize(resp_msg):
         "*": parse_array,
     }
 
-    first_char = formatted_msg[0]
+    first_char = resp_msg[0]
 
     parser = switcher.get(first_char)
+
+    if level > 2 and first_char == "*":
+        return
 
     if not parser:
         return
 
-    return parser(formatted_msg)
+    if parser is parse_array:
+        return parser(resp_msg, level)
+
+    return parser(resp_msg)
