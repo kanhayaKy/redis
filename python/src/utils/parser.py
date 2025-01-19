@@ -139,10 +139,10 @@ class RESPSerializer:
             return self.parse_string(item)
         if isinstance(item, int):
             return self.parse_int(item)
-        if isinstance(item, list):
+        if isinstance(item, (list, tuple)):
             return self.parse_array(item)
 
-        raise ValueError("Unsupported data format")
+        raise ValueError(f"Unsupported data format. Data={item} type={type(item)}")
 
     def serialize(self, bulk=False, error=False):
         """Serialize the main data object."""

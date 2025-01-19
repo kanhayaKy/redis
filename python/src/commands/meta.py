@@ -24,7 +24,7 @@ class CommandMeta(type):
         """
         Retrieve a command class by name.
         """
-        return cls.registry.get(name)
+        return cls.registry.get(name.upper())
 
     @classmethod
     def get_command_callable(cls, name):
@@ -32,7 +32,7 @@ class CommandMeta(type):
         Retrieve a command instance by name.
         """
 
-        if name not in cls.registry:
+        if name.upper() not in cls.registry:
             raise Exception("Invalid Command")
         command = CommandMeta.get_command(name)
         return command()
