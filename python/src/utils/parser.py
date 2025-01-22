@@ -1,4 +1,5 @@
 from io import BytesIO
+from collections import deque
 
 CRLF = b"\r\n"
 CRLF_STR = "\r\n"
@@ -139,7 +140,9 @@ class RESPSerializer:
             return self.parse_string(item)
         if isinstance(item, int):
             return self.parse_int(item)
-        if isinstance(item, (list, tuple)):
+        if item is None:
+            return self.parse_bulk_string(item)
+        if isinstance(item, (list, tuple, deque)):
             return self.parse_array(item)
 
         raise ValueError(f"Unsupported data format. Data={item} type={type(item)}")

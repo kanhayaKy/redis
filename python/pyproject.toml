@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "redis"
+name = "redis-server"
 version = "0.1.0"
 description = ""
 authors = ["kanhaya kumar yadav <kanhayaky120@gmail.com>"]
@@ -7,6 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
+redis = "^5.2.1"
 
 
 [tool.poetry.group.dev.dependencies]

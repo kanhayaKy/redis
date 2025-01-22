@@ -11,6 +11,12 @@ class BaseCommand(metaclass=CommandMeta):
     def __init__(self, description=""):
         self.description = description
 
+    def validate(self, *args, **kwargs):
+        """
+        Validates the args for a command
+        """
+        raise NotImplementedError("Subclasses must implement the `validate` method.")
+
     def execute(self, *args, **kwargs):
         """
         Execute the command. Must be implemented by subclasses.

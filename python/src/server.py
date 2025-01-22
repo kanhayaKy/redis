@@ -8,8 +8,8 @@ from utils import RESPSerializer, RESPParser
 
 class RedisLiteHandler(BaseRequestHandler):
     def handle(self):
-        try:
-            while True:
+        while True:
+            try:
                 request = self.request.recv(512)
                 if not request:
                     print("Empty request received, closing connection.")
@@ -20,14 +20,11 @@ class RedisLiteHandler(BaseRequestHandler):
                 response = process_request(request)
                 self.request.sendall(response)
 
-        except Exception as e:
-            print(f"Error handling request: {e}")
-            error_response = RESPSerializer("Error processing request").serialize(
-                error=True
-            )
-            self.request.sendall(error_response)
-        finally:
-            self.request.close()
+            except Exception as e:
+                print(f"Error handling request: {e}")
+                error_response = RESPSerializer(e).serialize(error=True)
+                self.request.sendall(error_response)
+        self.request.close()
 
 
 def start_redis_workers(n_workers=2):

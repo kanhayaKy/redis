@@ -33,7 +33,9 @@ class CommandMeta(type):
         """
 
         if name.upper() not in cls.registry:
-            raise Exception("Invalid Command")
+            raise Exception(
+                f"Invalid Command, valid commands are {CommandMeta.list_commands()}"
+            )
         command = CommandMeta.get_command(name)
         return command()
 
