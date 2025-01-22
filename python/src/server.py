@@ -5,6 +5,8 @@ from threading import Thread
 from handler import process_request
 from utils import RESPSerializer, RESPParser
 
+from commands.store import RedisStore
+
 
 class RedisLiteHandler(BaseRequestHandler):
     def handle(self):
@@ -44,7 +46,10 @@ if __name__ == "__main__":
     try:
         start_redis_workers()
     except KeyboardInterrupt:
+        print("Saving data to disk...")
+        RedisStore.save()
         print("stopping server...")
+
         import sys
 
         sys.exit(0)
