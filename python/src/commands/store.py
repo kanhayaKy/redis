@@ -2,6 +2,21 @@ import os
 import pickle
 from threading import Lock
 
+from utils import get_current_ts
+
+
+class DataValue:
+    def __init__(self, data, expiry=None):
+        self.data = data
+        self.expiry = expiry
+
+    def is_expired(self):
+        if not self.expiry:
+            return False
+
+        current_ts = get_current_ts()
+        return current_ts > self.expiry
+
 
 class DataStore:
     _instance = None
@@ -20,12 +35,19 @@ class DataStore:
             self._file_path = "db.rdb"
             self.load_from_disk()
 
-    def set(self, key, value):
+    def set(self, key, value, expiry=None):
         with self._instance_lock:
-            self._data[key] = value
+            self._data[key] = DataValue(data=value, expiry=expiry)
 
     def get(self, key):
-        return self._data.get(key)
+        if key not in self._data:
+            return None
+
+        if self._data.get(key).is_expired():
+            del self._data[key]
+            return None
+
+        return self._data.get(key).data
 
     def delete(self, key):
         with self._instance_lock:
@@ -33,7 +55,14 @@ class DataStore:
                 del self._data[key]
 
     def __contains__(self, key):
-        return key in self._data
+        if not key in self._data:
+            return False
+
+        if self._data[key].is_expired():
+            del self._data[key]
+            return False
+
+        return True
 
     def load_from_disk(self):
         """
