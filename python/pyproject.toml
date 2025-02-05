@@ -4,6 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["kanhaya kumar yadav <kanhayaky120@gmail.com>"]
 readme = "README.md"
+packages = [{include = "redis_server"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"

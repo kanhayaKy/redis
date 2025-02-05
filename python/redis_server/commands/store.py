@@ -2,7 +2,7 @@ import os
 import pickle
 from threading import Lock
 
-from utils import get_current_ts
+from redis_server.utils import get_current_ts
 
 
 class DataValue:
@@ -63,6 +63,12 @@ class DataStore:
             return False
 
         return True
+
+    def get_expiry(self, key):
+        if key in self._data:
+            return self._data.get(key).expiry
+
+        return None
 
     def load_from_disk(self):
         """

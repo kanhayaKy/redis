@@ -7,7 +7,6 @@ from .delete import DelCommand
 from .exists import ExistsCommand
 from .incr import IncrCommand
 from .decr import DecrCommand
-
 from .lpush import LPushCommand
 from .rpush import RPushCommand
 from .save import SaveCommand

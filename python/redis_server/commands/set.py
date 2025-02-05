@@ -1,11 +1,13 @@
 from .base import BaseCommand
 from .store import RedisStore
-from utils import (
+from redis_server.utils import (
     get_expiry_time_unix_ms,
     get_expiry_time_milliseconds,
     get_expiry_time_seconds,
     get_expiry_time_unix,
 )
+
+from redis_server.exceptions import CommandSyntaxError, WrongNumberOfArgsError
 
 
 class SetCommand(BaseCommand):
@@ -20,17 +22,22 @@ class SetCommand(BaseCommand):
     def __init__(self):
         super().__init__(description="Sets the value for the given key.")
 
+    def validate_args(self, *args):
+        super().validate_args(*args)
+        if len(args) < 2:
+            raise WrongNumberOfArgsError()
+
     def parse_args(self, args):
         if len(args) > 2:
-            raise Exception("Syntax error")
+            raise CommandSyntaxError()
 
         option_name = args[0]
 
         if option_name.upper() not in self.supported_options:
-            raise Exception("Syntax error, invalid option")
+            raise CommandSyntaxError()
 
         if option_name and len(args) < 2:
-            raise Exception("Syntax error, invalid option")
+            raise CommandSyntaxError()
 
         option_value = args[1]
 
