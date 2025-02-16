@@ -29,11 +29,13 @@ class DataStore:
                 cls._instance = super().__new__(cls)
         return cls._instance
 
-    def __init__(self):
+    def __init__(self, load_from_disk=True, file_path=None):
         if not hasattr(self, "_data"):  # Prevent reinitialization in Singleton
             self._data = {}
-            self._file_path = "db.rdb"
-            self.load_from_disk()
+            self._file_path = file_path or "db.rdb"
+
+            if load_from_disk:
+                self.load_from_disk()
 
     def set(self, key, value, expiry=None):
         with self._instance_lock:
@@ -86,16 +88,21 @@ class DataStore:
         else:
             print(f"No existing data file found. Starting fresh.")
 
-    def save(self):
+    def save(self, file_path=None):
         """
         Save the current state of the datastore to disk.
         """
+
+        file_path = file_path or self._file_path
         try:
-            with open(self._file_path, "wb") as file:
+            with open(file_path, "wb") as file:
                 pickle.dump(self._data, file)
                 print(f"Data saved to {self._file_path}")
         except Exception as e:
             print(f"Failed to save data to disk: {e}")
+
+    def reset_db(self):
+        self._data = {}
 
 
 RedisStore = DataStore()

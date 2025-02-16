@@ -20,14 +20,17 @@ class LPushCommand(BaseCommand):
         if len(args) < 2:
             raise WrongNumberOfArgsError
 
-    def execute(self, key, *values):
+    def execute(self, key, values):
         if key not in RedisStore:
             RedisStore.set(key, deque([]))
 
         current_value = deque(RedisStore.get(key))
 
+        print("****************", values)
+
         for value in values:
             current_value.appendleft(value)
 
         RedisStore.set(key, current_value)
+        print("****************", key, current_value)
         return len(current_value)

@@ -20,7 +20,7 @@ class RPushCommand(BaseCommand):
         if len(args) < 2:
             raise WrongNumberOfArgsError
 
-    def execute(self, key, *values):
+    def execute(self, key, values):
         if key not in RedisStore:
             RedisStore.set(key, deque([]))
 

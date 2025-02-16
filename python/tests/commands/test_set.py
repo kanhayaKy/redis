@@ -31,9 +31,10 @@ def test_set_without_expiry():
 
 
 def test_set_ex_option():
+    expiry_time = get_expiry_time_seconds(3)
     SetCommand()("ex-key", "ex-value", "ex", 3)
     assert RedisStore.get("ex-key") == "ex-value"
-    assert RedisStore.get_expiry("ex-key") == get_expiry_time_seconds(3)
+    assert RedisStore.get_expiry("ex-key") == expiry_time
 
 
 def test_set_px_option():
